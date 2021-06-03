@@ -1,0 +1,37 @@
+HungrySingleton饿汉式单例模式
+该模式的特点是一旦加载，就会创建一个单利，保证在调用getInstance时候，单例模式就已经存在了
+饿汉式模式单例在类创建的同时就已经创建好一个静态的对象供系统使用，以后不会在改变，所以是线程安全的，可以直接使用在多线程不会出现问题
+不推荐使用
+
+LazySingleton懒汉模式
+在类加载的时候不会生成单例，只有在第一次调用getinstance时候，才会去创建这个单例。
+在多线程的程序中，不能删除volatile和synchronized的关键字，否则将存在线程非安全的问题，
+不删除这两个关键字，就能保证线程的安全性，但是每次都要同步，会影响性能
+不推荐使用
+
+DoubleCheckSingleton双重检查
+public static synchronized DoubleCheckSingleton getInstance(){
+        if (doubleCheckSingleton == null){
+            synchronized (DoubleCheckSingleton.class){
+                if (doubleCheckSingleton == null){
+                    doubleCheckSingleton = new DoubleCheckSingleton();
+                }
+            }
+        }
+        return doubleCheckSingleton;
+}
+首先在getInstance被调用的时候，if (doubleCheckSingleton == null)，先进性判断是不是为空
+当多个线程一起来的时候，如果为空，多个线程都进入synchronized (DoubleCheckSingleton.class)
+在这一步，只能有一个线程，其中一个进入之后，实例化，然后其他的线程再进来之后，在进行判断一次if (doubleCheckSingleton == null)
+这时候，已经不再为null，所以，这里就不在进行实例化
+推荐使用
+
+StaticSingleton静态内部类
+private static class SingletonInstance{
+        private static final StaticSingleton INSTANCE = new StaticSingleton();
+    }
+    public static synchronized StaticSingleton getInstance(){
+        return SingletonInstance.INSTANCE;
+    }
+当getInstance的方法被调用的时候，会将SingletonInstace进行装载，装载的过程是线程安全的，所以，保证线程的安全性
+推荐使用
